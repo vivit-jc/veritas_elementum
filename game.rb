@@ -33,6 +33,7 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
   end
 
   def click_menu(pos)
+    @message.clear
     case(pos)
     when 0 #実験
       @game_status = :experiment
@@ -53,21 +54,31 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     end
   end
 
-  def click_material(pos, sym)
-    @experiment.set_material(pos, sym)
+  def click_material(pos)
+    @experiment.set_material(pos, :m)
     @mainview_status = :set_materials
 
   end
 
-  def set_material(pos)
+  def click_reagent(pos)
+    @experiment.set_material(pos, :r)
+    @mainview_status = :set_materials
+  end
+
+  def set_material(pos, kind)
     p "set_material"
-    @experiment.setting_material = pos
-    @mainview_status = :materials_view
+    @experiment.setting_material = pos[0]
+    @page = 0
+    if pos[1] == 0
+      @mainview_status = :materials_view
+    elsif pos[1] == 1
+      @mainview_status = :reagents_view
+    end
   end
 
   def start_experiment
     if @experiment.verify != 0
-      @message[0] = @experiment.verify 
+      @message[0] = @experiment.verify
       return
     end
     @experiment.make_reagent

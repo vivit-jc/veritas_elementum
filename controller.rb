@@ -42,10 +42,12 @@ class Controller
         if pos_materials_view_page_select? 
           @game.click_material_page
         elsif pos_materials_view != -1
-          @game.click_material(pos_materials_view, :m)
+          @game.click_material(pos_materials_view)
         end
+      when :reagents_view
+        @game.click_reagent(pos_reagents_view) if pos_reagents_view != -1
       when :set_materials
-        @game.set_material(pos_set_materials) if pos_set_materials != -1
+        @game.set_material(pos_kind_of_material) if pos_kind_of_material[1] != -1
         @game.start_experiment if pos_start_experiment?
       when :experiment_result
         @game.click_menu(0) if pos_one_more_experiment?
@@ -84,6 +86,15 @@ class Controller
     return -1
   end
 
+  def pos_reagents_view
+    page = @game.page
+    10.times do |i|
+      next if @game.experiment.reagents.size < i+1
+      return i if mcheck(20, 15+40*i, 440, 50+40*i)
+    end
+    return -1
+  end
+
   def pos_set_materials
     2.times do |i|
       return i if mcheck(EXPERIMENT[i][0],EXPERIMENT[i][1],EXPERIMENT[i][0]+64,EXPERIMENT[i][1]+64)
@@ -91,8 +102,16 @@ class Controller
     return -1
   end
 
+  def pos_kind_of_material
+    2.times do |i|
+      return [i,0] if mcheck(113+150*i, 155, 113+150*i+get_width("素材"), 175)
+      return [i,1] if mcheck(113+150*i, 180, 113+150*i+get_width("試薬"), 200)
+    end
+    return [-1,-1]
+  end
+
   def pos_start_experiment?
-    mcheck(170,222,170+get_width("実験する"),242)
+    mcheck(170,222,170+get_width("反応させる"),242)
   end
 
   def pos_one_more_experiment?

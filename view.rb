@@ -8,6 +8,8 @@ class View
     @clock.box(3, 3, MAIN_MENU_WIDTH-4, CLOCK_HEIGHT-4, WHITE)
     @iconback = Image.new(64,64)
     @iconback.box_fill(0,0,64,64,WHITE)
+    @iconback_s = Image.new(32,32)
+    @iconback_s.box_fill(0,0,32,32,WHITE)
   end
 
   def draw
@@ -28,9 +30,7 @@ class View
     Window.draw_font(30, 240, "VERITAS, ELEMENTUM", Font50, {color: YELLOW})
     
     TITLE_MENU_TEXT.each_with_index do |menu,i|
-      fonthash = {color: YELLOW}
-      fonthash = {color: GREEN} if(@controller.pos_title_menu == i)
-      Window.draw_font(TITLE_MENU_X,TITLE_MENU_Y[i],menu,Font32,fonthash) 
+      Window.draw_font(TITLE_MENU_X,TITLE_MENU_Y[i],menu,Font32,mouseover_color(@controller.pos_title_menu == i, YELLOW)) 
     end
   end
 
@@ -53,6 +53,8 @@ class View
       draw_materials_view 
     when :experiment_result
       draw_experiment_result
+    when :reagents_view
+      draw_reagents_view
     end
 
   end
@@ -71,18 +73,36 @@ class View
     Window.draw(420,140,Image[:left]) if page == 1
   end
 
-  def draw_set_materials
-    2.times do |i|
-      Window.draw(EXPERIMENT[i][0], EXPERIMENT[i][1], @iconback)
-      if @game.experiment.material[i].class == Symbol
-        Window.draw(EXPERIMENT[i][0], EXPERIMENT[i][1], Image[@game.experiment.material[i]]) 
-      elsif @game.experiment.material[i].class == Number
-
+  def draw_reagents_view
+    page = @game.page
+    10.times do |i|
+      next if @game.experiment.reagents.size < i+1
+      reagent = @game.experiment.reagents[page*10+i]
+      Window.draw_font(20, 20+40*i, "試薬"+(page*10+i+1).to_s, Font20, mouseover_color(@controller.pos_reagents_view == i)) 
+      2.times do |j|
+        Window.draw(100+170*j, 15+40*i, @iconback_s)
+        Window.draw_scale(84+170*j, -1+40*i, reagent[j].class == Symbol ? Image[reagent[j]] : Image[:potion], 0.5, 0.5)
+        Window.draw_font(140+170*j, 20+40*i, reagent[j].class == Symbol ? reagent[j] : "試薬"+(reagent[j]+1).to_s, Font16) 
       end
     end
-    fonthash = {color: WHITE}
-    fonthash = {color: GREEN} if(@controller.pos_start_experiment?)
-    Window.draw_font(170, 222, "反応させる", Font20, fonthash)
+  end
+
+  def draw_set_materials
+    material = @game.experiment.material
+    2.times do |i|
+      Window.draw(EXPERIMENT[i][0], EXPERIMENT[i][1], @iconback)
+      if material[i].class == Symbol
+        Window.draw_font(EXPERIMENT[i][0], EXPERIMENT[i][1]-25, material[i].to_s, Font20)
+        Window.draw(EXPERIMENT[i][0], EXPERIMENT[i][1], Image[material[i]]) 
+      elsif material[i].class == Number
+        Window.draw_font(EXPERIMENT[i][0], EXPERIMENT[i][1]-25, "試薬"+(material[i]+1).to_s, Font20)
+        Window.draw(EXPERIMENT[i][0], EXPERIMENT[i][1], Image[:potion]) 
+      end
+      pos = @controller.pos_kind_of_material
+      Window.draw_font(113+150*i, 155, "素材", Font20, mouseover_color(pos[0] == i && pos[1] == 0))
+      Window.draw_font(113+150*i, 180, "試薬", Font20, mouseover_color(pos[0] == i && pos[1] == 1))   
+    end
+    Window.draw_font(170, 222, "反応させる", Font20, mouseover_color(@controller.pos_start_experiment?))
   end
 
   def draw_experiment_result
@@ -90,22 +110,23 @@ class View
     Window.draw_font(30, 50, "実験#"+(note.size).to_s, Font20) 
     2.times do |i|
       Window.draw(30+140*i,90,@iconback)
-      Window.draw(30+140*i,90,Image[note.last[i]])
-      Window.draw_font(30+140*i, 160, note.last[i], Font20)
+      if note.last[i].class == Symbol
+        Window.draw(30+140*i,90,Image[note.last[i]])
+        Window.draw_font(30+140*i, 160, note.last[i], Font20)     
+      elsif note.last[i].class == Number
+        Window.draw(30+140*i,90,Image[:potion])
+        Window.draw_font(30+140*i, 160, "試薬"+(note.last[i]+1).to_s, Font20)
+      end
     end
     Window.draw_font(30, 200, "魔力変化 " + (note.last[3][0] ? "有" : "無") + "　　魔力量 " + note.last[3][1].to_s, Font20) 
     Window.draw_font(30, 300, note.last.to_s, Font20)
 
-    fonthash = {color: WHITE}
-    fonthash = {color: GREEN} if(@controller.pos_one_more_experiment?)
-    Window.draw_font(30, 250, "続けて実験を行う", Font20, fonthash)
+    Window.draw_font(30, 250, "続けて実験を行う", Font20, mouseover_color(@controller.pos_one_more_experiment?))
   end
 
   def draw_main_menu
     MAIN_MENU_TEXT.each_with_index do |menu,i|
-      fonthash = {color: WHITE}
-      fonthash = {color: GREEN} if(@controller.pos_main_menu == i)
-      Window.draw_font(640 - MAIN_MENU_WIDTH + 30, MENU_EACH_HEIGHT*i+5, menu, Font20, fonthash) 
+      Window.draw_font(640 - MAIN_MENU_WIDTH + 30, MENU_EACH_HEIGHT*i+5, menu, Font20, mouseover_color(@controller.pos_main_menu == i)) 
     end
   end
 
@@ -125,8 +146,12 @@ class View
   end
 
   def draw_debug
-    Window.draw_font(0,20,@game.experiment.reagents.to_s,Font16)
   
+  end
+
+  def mouseover_color(bool, color=WHITE)
+    return {color: GREEN} if bool
+    return {color: color}
   end
 
   def atom_j(atoms)

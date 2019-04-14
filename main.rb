@@ -56,6 +56,7 @@ Window.width = 640
 Image.register(:title, "./img/cauldron.png")
 Image.register(:right, "./img/rightarrow.png")
 Image.register(:left, "./img/leftarrow.png")
+Image.register(:potion, "./img/antidote.png")
 Image.register(:earthworm, "./img/earthworm.png")
 MATERIALS.each_with_index do |m,i|
   Image.register(m, "./img/"+m.to_s+".png")
