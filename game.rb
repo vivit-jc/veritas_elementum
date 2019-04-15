@@ -2,8 +2,8 @@ class Game
 require_remote './experiment.rb'
 
 
-attr_accessor :status
-attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :page, :message, :mainview_status,
+attr_accessor :status, :page
+attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :message, :mainview_status,
   :experiment
 
   def initialize
@@ -42,7 +42,13 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     when 1 #外出
       @game_status = :go_out
     when 2 #ノート
+      if @experiment.note.size == 0
+        @message[0] = "まだ一回も実験していない！"
+        return 
+      end
       @game_status = :note
+      @mainview_status = :note
+      @page = @experiment.note.size-1
     when 3 #論文
       @game_status = :paper
     when 4 #素材
@@ -84,6 +90,11 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     @experiment.make_reagent
     @experiment.mes_experiment(@message)
     @mainview_status = :experiment_result
+  end
+
+  def call_reagent_note(no)
+    return if no.class != Number
+    @page = @experiment.note.find_index{|n|n[2] == no}
   end
 
   def click_material_page

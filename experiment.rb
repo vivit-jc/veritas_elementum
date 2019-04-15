@@ -38,13 +38,11 @@ class Experiment
 
     reagent_no = @reagents.find_index {|reagent| 
     	reagent == [@material[0], @material[1]] || reagent == [@material[1], @material[0]] }
-    if(reagent_no)
-      reagent_no += 1  
-    elsif(result[1] == 0)
+    if(result[1] == 0)
       reagent_no = -1
     else
       @reagents.push [@material[0], @material[1]]
-      reagent_no = @reagents.size
+      reagent_no = @reagents.size-1
     end
     @note.push [@material[0], @material[1], reagent_no, result]
     @material = [nil,nil]
@@ -95,12 +93,12 @@ class Experiment
 
   def mes_experiment(mes)
     if(!@note.last[3][0])
-      mes[0] = "試薬"+@note.last[2].to_s+"を2つ得た"
+      mes[0] = "試薬"+(@note.last[2]+1).to_s+"を2つ得た"
       mes[1] = "2つの素材は同一成分であると考えられる"
     elsif(@note.last[3][1] == 0)
       mes[0] = "魔力反応が消失した"
     else
-      mes[0] = "試薬"+@note.last[2].to_s+"を得た"
+      mes[0] = "試薬"+(@note.last[2]+1).to_s+"を得た"
     end
   end
 

@@ -41,6 +41,8 @@ class View
     case @game.game_status
     when :experiment
       draw_experiment
+    when :note
+      draw_note_view
     end
 
   end
@@ -107,21 +109,35 @@ class View
 
   def draw_experiment_result
     note = @game.experiment.note
-    Window.draw_font(30, 50, "実験#"+(note.size).to_s, Font20) 
-    2.times do |i|
+    draw_note(note.size-1)
+    Window.draw_font(30, 300, note.to_s, Font20)
+    Window.draw_font(30, 250, "続けて実験を行う", Font20, mouseover_color(@controller.pos_one_more_experiment?))
+  end
+
+  def draw_note_view
+    page = @game.page
+    draw_note(page)
+    Window.draw(60,260,Image[:left]) if page != 0
+    Window.draw(150,260,Image[:right]) if page != @game.experiment.note.size-1
+  end
+
+  def draw_note(no)
+    note = @game.experiment.note[no]
+    Window.draw_font(30, 50, "実験#"+(no+1).to_s, Font20) 
+    Window.draw_font(116, 90, "+", Font50) 
+    Window.draw_font(245, 94, "→", Font50) if note[3][1] != 0
+    Window.draw_font(140, 50, note.to_s, Font20) # テスト用表示
+    3.times do |i|
       Window.draw(30+140*i,90,@iconback)
-      if note.last[i].class == Symbol
-        Window.draw(30+140*i,90,Image[note.last[i]])
-        Window.draw_font(30+140*i, 160, note.last[i], Font20)     
-      elsif note.last[i].class == Number
+      if note[i].class == Symbol
+        Window.draw(30+140*i,90,Image[note[i]])
+        Window.draw_font(30+140*i, 160, note[i], Font20)
+      elsif note[i].class == Number && note[i] != -1
         Window.draw(30+140*i,90,Image[:potion])
-        Window.draw_font(30+140*i, 160, "試薬"+(note.last[i]+1).to_s, Font20)
+        Window.draw_font(30+140*i, 160, "試薬"+(note[i]+1).to_s, Font20)
       end
     end
-    Window.draw_font(30, 200, "魔力変化 " + (note.last[3][0] ? "有" : "無") + "　　魔力量 " + note.last[3][1].to_s, Font20) 
-    Window.draw_font(30, 300, note.last.to_s, Font20)
-
-    Window.draw_font(30, 250, "続けて実験を行う", Font20, mouseover_color(@controller.pos_one_more_experiment?))
+    Window.draw_font(30, 200, "魔力変化 " + (note[3][0] ? "有" : "無") + "　　魔力量 " + note[3][1].to_s, Font20) 
   end
 
   def draw_main_menu

@@ -51,6 +51,10 @@ class Controller
         @game.start_experiment if pos_start_experiment?
       when :experiment_result
         @game.click_menu(0) if pos_one_more_experiment?
+      when :note
+        @game.page += 1 if pos_arrow == 1 && @game.experiment.note.size > @game.page+1
+        @game.page -= 1 if pos_arrow == 0 && @game.page > 0
+        @game.call_reagent_note(@game.experiment.note[@game.page][pos_note_material]) if pos_note_material != -1
       end
     end
   end
@@ -116,6 +120,23 @@ class Controller
 
   def pos_one_more_experiment?
     mcheck(30,250,30+get_width("続けて実験を行う"),270)
+  end
+
+  def pos_note_material
+    2.times do |i|
+      return i if mcheck(30+140*i,90,94+140*i,154)
+    end
+    return -1
+  end
+
+  def pos_arrow
+    status = @game.mainview_status
+    if status == :note
+      2.times do |i|
+        return i if mcheck(60+90*i, 260, 124+90*i, 324)
+      end
+    end
+    return -1
   end
 
   def get_width(str)
