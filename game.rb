@@ -1,10 +1,11 @@
 class Game
 require_remote './experiment.rb'
+require_remote './schedule.rb'
 
 
 attr_accessor :status, :page
 attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :message, :mainview_status,
-  :experiment
+  :experiment, :schedule, :places, :place_now, :distance
 
   def initialize
     @status = :title
@@ -25,6 +26,23 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     @materials_know = Array.new(30)
     @experiment = Experiment.new
     @experiment.set_veritas(@material_atoms)
+
+    @places = [
+      ["城下町(2時間)",
+        ["ラボ",:lab,2,true],
+        ["図書館",:library,2,true],
+        ["魔法薬ギルド",:pharmacy,2,true],
+        ["冒険者ギルド",:explorers,2,true],
+        ["行商人",:trader,2,true]],
+      ["素材集め",
+        ["森(1時間)",:forest,false],
+        ["山(3時間)",:mountain,false],
+        ["沼(4時間)",:swamp,false]
+      ]]
+    @place_now = :home
+
+    @schedule = Schedule.new
+
     @page = 0
   end
 
@@ -90,6 +108,7 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     @experiment.make_reagent
     @experiment.mes_experiment(@message)
     @mainview_status = :experiment_result
+    @schedule.gain_time(1)
   end
 
   def call_reagent_note(no)

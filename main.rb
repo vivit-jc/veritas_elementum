@@ -49,6 +49,19 @@ MATERIALS = [:acorn, :beans, :berries, :bones, :branches, :carrot, :clover, :cry
 :snail, :snake, :spider, :stones, :straberry, :waterdrop, :wine, :worm]
 ATOMS = [:fd, :fe, :fw, :fl, :ad, :ae, :aw, :al, :ed, :wd, :el, :wl]
 
+PLACES = [
+  ["城下町(2時間)",
+    ["ラボ",:lab,2,true],
+    ["図書館",:library,2,true],
+    ["魔法薬ギルド",:pharmacy,2,true],
+    ["冒険者ギルド",:explorers,2,true],
+    ["行商人",:trader,2,true]],
+  ["素材集め",
+    ["森(1時間)",:forest,false],
+    ["山(3時間)",:mountain,false],
+    ["沼(4時間)",:swamp,false]
+  ]]
+
 
 Window.height = 480
 Window.width = 640

@@ -10,6 +10,9 @@ class View
     @iconback.box_fill(0,0,64,64,WHITE)
     @iconback_s = Image.new(32,32)
     @iconback_s.box_fill(0,0,32,32,WHITE)
+    @placeback = Image.new(150,30)
+    @placeback.box(1,1,148,28,WHITE)
+    
   end
 
   def draw
@@ -43,6 +46,8 @@ class View
       draw_experiment
     when :note
       draw_note_view
+    when :go_out
+      draw_go_out
     end
 
   end
@@ -114,6 +119,17 @@ class View
     Window.draw_font(30, 250, "続けて実験を行う", Font20, mouseover_color(@controller.pos_one_more_experiment?))
   end
 
+  def draw_go_out
+    PLACES.each_with_index do |p,i|
+      Window.draw(10+165*i,30,@placeback)
+      Window.draw_font(15+165*i,36,p[0],Font20)
+      p.each_with_index do |t,j|
+        next if j == 0
+        Window.draw_font(20+165*i,60+j*25,t[0],Font20)
+      end
+    end
+  end
+
   def draw_note_view
     page = @game.page
     draw_note(page)
@@ -147,7 +163,8 @@ class View
   end
 
   def draw_schedule
-    Window.draw_font(480, 220, "春 1日(花) 8:00", Font20, {color: WHITE})
+    s = @game.schedule
+    Window.draw_font(480, 220, "#{s.season} #{s.day+1}日(#{s.weekday}) #{s.hour}時", Font20, {color: WHITE})
     Window.draw(640-MAIN_MENU_WIDTH, 480-SCHEDULE_HEIGHT, @clock)
   end
 
