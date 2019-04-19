@@ -35,7 +35,11 @@ class Controller
 
   def click_on_game
     if pos_main_menu != -1
-      @game.click_menu(pos_main_menu)
+      if @game.game_status != :go_out
+        @game.click_menu(pos_main_menu)
+      else
+        @game.go_out(@game.places_for_menu[pos_main_menu])
+      end
     else
       case(@game.mainview_status)
       when :materials_view
@@ -55,6 +59,9 @@ class Controller
         @game.page += 1 if pos_arrow == 1 && @game.experiment.note.size > @game.page+1
         @game.page -= 1 if pos_arrow == 0 && @game.page > 0
         @game.call_reagent_note(@game.experiment.note[@game.page][pos_note_material]) if pos_note_material != -1
+      when :go_out
+        pos = pos_go_out
+        @game.go_out(PLACES[pos[0]][pos[1]]) if pos != -1
       end
     end
   end
@@ -68,6 +75,7 @@ class Controller
   end
 
   def pos_main_menu
+    return pos_places_menu if @game.place_now != :home
     MAIN_MENU_TEXT.each_with_index do |menu, i|
       #return i if(mcheck(MENU_X, MENU_Y[i], MENU_X+Font32.get_width(MENU_TEXT[i]), MENU_Y[i]+32))
       return i if(mcheck(640-MAIN_MENU_WIDTH, MENU_EACH_HEIGHT*i, 640, MENU_EACH_HEIGHT*(i+1)))
@@ -75,9 +83,15 @@ class Controller
     return -1
   end
 
+  def pos_places_menu
+    @game.places_for_menu.each_with_index do |menu,i|
+      return i if(mcheck(640-MAIN_MENU_WIDTH, MENU_EACH_HEIGHT*i, 640, MENU_EACH_HEIGHT*(i+1)))
+    end
+    return -1
+  end
+
   def pos_materials_view_page_select?
-    return true if mcheck(420,140,420+64,140+64)
-    return false
+    mcheck(420,140,420+64,140+64)
   end
 
   def pos_materials_view
@@ -125,6 +139,16 @@ class Controller
   def pos_note_material
     2.times do |i|
       return i if mcheck(30+140*i,90,94+140*i,154)
+    end
+    return -1
+  end
+
+  def pos_go_out
+    PLACES.each_with_index do |place,i|
+      place.each_with_index do |on,j|
+        next if j == 0
+        return [i,j] if mcheck(10+165*i,60+j*25,160+165*i,80+j*25)
+      end
     end
     return -1
   end

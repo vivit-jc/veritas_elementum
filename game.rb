@@ -5,7 +5,7 @@ require_remote './schedule.rb'
 
 attr_accessor :status, :page
 attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :message, :mainview_status,
-  :experiment, :schedule, :places, :place_now, :distance
+  :experiment, :schedule, :place_now, :places_for_menu
 
   def initialize
     @status = :title
@@ -27,20 +27,8 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     @experiment = Experiment.new
     @experiment.set_veritas(@material_atoms)
 
-    @places = [
-      ["城下町(2時間)",
-        ["ラボ",:lab,2,true],
-        ["図書館",:library,2,true],
-        ["魔法薬ギルド",:pharmacy,2,true],
-        ["冒険者ギルド",:explorers,2,true],
-        ["行商人",:trader,2,true]],
-      ["素材集め",
-        ["森(1時間)",:forest,false],
-        ["山(3時間)",:mountain,false],
-        ["沼(4時間)",:swamp,false]
-      ]]
     @place_now = :home
-
+    @places_for_menu = make_places_menu
     @schedule = Schedule.new
 
     @page = 0
@@ -59,6 +47,8 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
       @message[0] = "どの素材で実験しよう？"
     when 1 #外出
       @game_status = :go_out
+      @mainview_status = :go_out
+      @message[0] = "どこに行こう？"
     when 2 #ノート
       if @experiment.note.size == 0
         @message[0] = "まだ一回も実験していない！"
@@ -120,10 +110,17 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     @page = 1 - @page
   end
 
-  def go_out(s)
-    @message[1] = "go_out" + s.to_s
+  def go_out(place)
+    p "go_out",place
+    @message[1] = "go_out " + place[1].to_s
+    @place_now = place[1]
+    @schedule.gain_time(place[2])
+    make_places_menu(@place_now)
+    if @place_now == :home
+      @mainview_status = :none
+      @game_status = :none 
+    end
   end
-
 
   def go_title
     @status = :title
@@ -131,6 +128,24 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
 
   def stats
     @status = :stats
+  end
+
+  def make_places_menu(except=nil)
+    p "make_places_menu"
+    places = [["家に戻る",:home,2,false]]
+    PLACES.each_with_index do |menu,i|
+      menu.each_with_index do |place,j|
+        next if j == 0
+        next if place[1] == except
+        next if place[1] != :home && (gathering?(@place_now) || !place[3])
+        places.push place
+      end
+    end
+    return places
+  end
+
+  def gathering?(place)
+    place == :forest || place == :mountain || place == :swamp
   end
 
 end

@@ -38,7 +38,7 @@ class View
   end
 
   def draw_game
-    draw_main_menu
+    draw_main_menu if @game.place_now == :home
     draw_schedule
     draw_message(@game.message)
     case @game.game_status
@@ -47,7 +47,12 @@ class View
     when :note
       draw_note_view
     when :go_out
-      draw_go_out
+      if @game.place_now == :home
+        draw_go_out
+      else
+        draw_places_menu
+        draw_place
+      end
     end
 
   end
@@ -125,9 +130,13 @@ class View
       Window.draw_font(15+165*i,36,p[0],Font20)
       p.each_with_index do |t,j|
         next if j == 0
-        Window.draw_font(20+165*i,60+j*25,t[0],Font20)
+        Window.draw_font(20+165*i, 60+j*25, t[0], Font20, mouseover_color(@controller.pos_go_out == [i,j]))
       end
     end
+  end
+
+  def draw_place
+    Window.draw_font(20, 60, "draw_place_main", Font20)
   end
 
   def draw_note_view
@@ -159,6 +168,13 @@ class View
   def draw_main_menu
     MAIN_MENU_TEXT.each_with_index do |menu,i|
       Window.draw_font(640 - MAIN_MENU_WIDTH + 30, MENU_EACH_HEIGHT*i+5, menu, Font20, mouseover_color(@controller.pos_main_menu == i)) 
+    end
+  end
+
+  def draw_places_menu
+    places = @game.places_for_menu
+    places.each_with_index do |place,i|
+      Window.draw_font(640 - MAIN_MENU_WIDTH + 30, MENU_EACH_HEIGHT*i+5, place[0], Font20, mouseover_color(@controller.pos_main_menu == i))
     end
   end
 

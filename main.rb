@@ -57,9 +57,9 @@ PLACES = [
     ["冒険者ギルド",:explorers,2,true],
     ["行商人",:trader,2,true]],
   ["素材集め",
-    ["森(1時間)",:forest,false],
-    ["山(3時間)",:mountain,false],
-    ["沼(4時間)",:swamp,false]
+    ["森(1時間)",:forest,1,false],
+    ["山(3時間)",:mountain,3,false],
+    ["沼(4時間)",:swamp,4,false]
   ]]
 
 
