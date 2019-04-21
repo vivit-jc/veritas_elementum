@@ -35,7 +35,7 @@ class Controller
 
   def click_on_game
     if pos_main_menu != -1
-      if @game.game_status != :go_out
+      if @game.game_status != :go_out || @game.place_now == :home
         @game.click_menu(pos_main_menu)
       else
         @game.go_out(@game.places_for_menu[pos_main_menu])

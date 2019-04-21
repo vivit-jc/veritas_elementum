@@ -1,10 +1,11 @@
 class Game
 require_remote './experiment.rb'
 require_remote './schedule.rb'
+require_remote './material.rb'
 
 
 attr_accessor :status, :page
-attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :message, :mainview_status,
+attr_reader :game_status, :game_status_memo, :material, :message, :mainview_status,
   :experiment, :schedule, :place_now, :places_for_menu
 
   def initialize
@@ -14,22 +15,15 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
     @mainview_status = nil
     @menu_status = nil
     @message = ["", "", ""]
-    #元素の設定
-    atoms = ATOMS.clone
-    @material_atoms = []
-    @material_atoms += atoms + atoms
-    6.times do
-      @material_atoms.push atoms.sample
-    end
-    @material_atoms.shuffle!
-
-    @materials_know = Array.new(30)
+    
+    @material = Material.new
     @experiment = Experiment.new
-    @experiment.set_veritas(@material_atoms)
+    @schedule = Schedule.new
+    
+    @experiment.set_veritas(@material.material_atoms)
 
     @place_now = :home
     @places_for_menu = make_places_menu
-    @schedule = Schedule.new
 
     @page = 0
   end
@@ -137,14 +131,15 @@ attr_reader :game_status, :game_status_memo, :material_atoms, :materials_know, :
       menu.each_with_index do |place,j|
         next if j == 0
         next if place[1] == except
-        next if place[1] != :home && (gathering?(@place_now) || !place[3])
+        next if gathering_place?(@place_now)
+        next if @place_now != :home && gathering_place?(place[1])
         places.push place
       end
     end
-    return places
+    @places_for_menu = places
   end
 
-  def gathering?(place)
+  def gathering_place?(place)
     place == :forest || place == :mountain || place == :swamp
   end
 

@@ -4,6 +4,8 @@ class View
     @game = game
     @controller = controller
 
+    @material = @game.material
+
     @clock = Image.new(MAIN_MENU_WIDTH, CLOCK_HEIGHT)
     @clock.box(3, 3, MAIN_MENU_WIDTH-4, CLOCK_HEIGHT-4, WHITE)
     @iconback = Image.new(64,64)
@@ -78,7 +80,7 @@ class View
         Window.draw(20+80*j,20+110*i,@iconback)
         Window.draw(20+80*j,20+110*i,Image[MATERIALS[j+i*5+page*15]])
         Window.draw_font(20+80*j, 20+110*i+65, MATERIALS[j+i*5+page*15].to_s, Font16) 
-        Window.draw_font(20+80*j, 20+110*i+85, atom_j(@game.material_atoms[j+i*5+page*15]), Font16) 
+        Window.draw_font(20+80*j, 20+110*i+85, atom_j(@material.material_atoms[j+i*5+page*15]), Font16) 
       end
     end
     Window.draw(420,140,Image[:right]) if page == 0
