@@ -75,14 +75,20 @@ class View
 
   def draw_materials_view
     page = @game.page
-    3.times do |i|
-      5.times do |j|
-        Window.draw(20+80*j,20+110*i,@iconback)
-        Window.draw(20+80*j,20+110*i,Image[MATERIALS[j+i*5+page*15]])
-        Window.draw_font(20+80*j, 20+110*i+65, MATERIALS[j+i*5+page*15].to_s, Font16) 
-        Window.draw_font(20+80*j, 20+110*i+85, atom_j(@material.material_atoms[j+i*5+page*15]), Font16) 
-      end
+    if @game.game_status == :experiment
+      materials = @material.have_materials
+    elsif @game.game_status == :material
+      materials = @material.know_materials
     end
+
+    materials.select{|k,v|v>0}.each_with_index do |(k,v),i|
+      next if (page+1)*16 <= i || page*16 > i
+      next if v == 0
+      Window.draw(10+200*(((i%16)/8).floor), 20+40*(i%8), @iconback_s)
+      Window.draw_scale(-6+200*(((i%16)/8).floor), 4+40*(i%8), Image[k], 0.5, 0.5)
+      Window.draw_font(45+200*(((i%16)/8).floor), 28+40*(i%8), "x "+v.to_s, Font20)
+    end
+
     Window.draw(420,140,Image[:right]) if page == 0
     Window.draw(420,140,Image[:left]) if page == 1
   end

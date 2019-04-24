@@ -95,10 +95,9 @@ class Controller
   end
 
   def pos_materials_view
-    page = @game.page
-    3.times do |i|
-      5.times do |j|
-        return j+i*5+page*15 if mcheck(20+80*j,20+110*i,20+80*j+64,20+110*i+64)
+    8.times do |y|
+      2.times do |x|
+        return y+x*8 if mcheck(10+190*x,20+40*y,10+190*x+180,20+40*y+32)
       end
     end
     return -1

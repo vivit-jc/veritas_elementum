@@ -19,7 +19,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     @material = Material.new
     @experiment = Experiment.new
     @schedule = Schedule.new
-    
+
     @experiment.set_veritas(@material.material_atoms)
 
     @place_now = :home
@@ -63,7 +63,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
   end
 
   def click_material(pos)
-    @experiment.set_material(pos, :m)
+    @experiment.set_material(@material.have_array[pos+@page*16][0], :m)
     @mainview_status = :set_materials
 
   end
@@ -89,6 +89,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
       @message[0] = @experiment.verify
       return
     end
+    2.times{|i|@material.have_materials[@experiment.material[i]] -= 1 if @experiment.material[i].class == Symbol}
     @experiment.make_reagent
     @experiment.mes_experiment(@message)
     @mainview_status = :experiment_result

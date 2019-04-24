@@ -4,6 +4,7 @@ class Experiment
   attr_reader :material, :reagents, :note
 
   def initialize
+    p "init experiment"
     @setting_material = 0
     @material = [nil,nil]
     @reagents = []
@@ -14,12 +15,8 @@ class Experiment
   	@material_atoms = atoms
   end
 
-  def set_material(pos, sym)
-    if sym == :m
-      @material[@setting_material] = MATERIALS[pos]
-    elsif sym == :r 
-      @material[@setting_material] = pos
-    end
+  def set_material(mat, sym)
+    @material[@setting_material] = mat
   end
 
   def verify
