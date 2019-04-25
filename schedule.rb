@@ -10,7 +10,10 @@ attr_accessor :hour, :day
 
   def gain_time(x)
 	@hour += x
-	@hour -= 24 if @hour > 24  	
+	if @hour > 24  	
+	  @hour -= 24
+	  @day += 1 
+	end
   end
 
   def weekday

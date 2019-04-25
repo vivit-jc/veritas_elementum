@@ -35,10 +35,10 @@ class Controller
 
   def click_on_game
     if pos_main_menu != -1
-      if @game.game_status != :go_out || @game.place_now == :home
-        @game.click_menu(pos_main_menu)
+      if @game.game_status == :go_out && @game.place_now != :home
+        @game.go_out(@game.places_for_menu[pos_main_menu][0])
       else
-        @game.go_out(@game.places_for_menu[pos_main_menu])
+        @game.click_menu(pos_main_menu) 
       end
     else
       case(@game.mainview_status)
@@ -61,7 +61,7 @@ class Controller
         @game.call_reagent_note(@game.experiment.note[@game.page][pos_note_material]) if pos_note_material != -1
       when :go_out
         pos = pos_go_out
-        @game.go_out(PLACES[pos[0]][pos[1]]) if pos != -1
+        @game.go_out(PLACES.to_a[pos][0]) if pos != -1
       end
     end
   end
@@ -77,7 +77,6 @@ class Controller
   def pos_main_menu
     return pos_places_menu if @game.place_now != :home
     MAIN_MENU_TEXT.each_with_index do |menu, i|
-      #return i if(mcheck(MENU_X, MENU_Y[i], MENU_X+Font32.get_width(MENU_TEXT[i]), MENU_Y[i]+32))
       return i if(mcheck(640-MAIN_MENU_WIDTH, MENU_EACH_HEIGHT*i, 640, MENU_EACH_HEIGHT*(i+1)))
     end
     return -1
@@ -143,10 +142,12 @@ class Controller
   end
 
   def pos_go_out
-    PLACES.each_with_index do |place,i|
-      place.each_with_index do |on,j|
-        next if j == 0
-        return [i,j] if mcheck(10+165*i,60+j*25,160+165*i,80+j*25)
+    PLACES.each_with_index do |(k,v),i|
+      next if k == :home
+      if i < 5 #城下町
+        return i if mcheck(10,60+i*25,170,80+i*25)
+      else #素材集め
+        return i if mcheck(170,60+(i-5)*25,320,80+(i-5)*25)
       end
     end
     return -1

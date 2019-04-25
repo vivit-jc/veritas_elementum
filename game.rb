@@ -105,16 +105,24 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     @page = 1 - @page
   end
 
-  def go_out(place)
+  def go_out(place) #placeはシンボルで入ってくる
     p "go_out",place
-    @message[1] = "go_out " + place[1].to_s
-    @place_now = place[1]
-    @schedule.gain_time(place[2])
-    make_places_menu(@place_now)
-    if @place_now == :home
+
+    @message[1] = "go_out " + PLACES[place].to_s
+    time = 0
+
+    if place == :home
       @mainview_status = :none
       @game_status = :none 
+      time = PLACES[@place_now][1]
+    elsif @place_now == :home
+      time = PLACES[place][1]
     end
+
+    @schedule.gain_time(time)
+    @place_now = place
+    make_places_menu(@place_now)
+
   end
 
   def go_title
@@ -125,19 +133,17 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     @status = :stats
   end
 
-  def make_places_menu(except=nil)
+  def make_places_menu(except=nil) #ハッシュではなく配列を作る
     p "make_places_menu"
-    places = [["家に戻る",:home,2,false]]
-    PLACES.each_with_index do |menu,i|
-      menu.each_with_index do |place,j|
-        next if j == 0
-        next if place[1] == except
-        next if gathering_place?(@place_now)
-        next if @place_now != :home && gathering_place?(place[1])
-        places.push place
-      end
+    if gathering_place?(@place_now) 
+      @places_for_menu = [[:home,"家に帰る",0,false]]
+      return
     end
-    @places_for_menu = places
+    places = PLACES.clone
+    places.delete_if do |k,v|
+      k == except || (@place_now != :home && gathering_place?(k))
+    end
+    p @places_for_menu = places.map{|k,v|[k,v].flatten}
   end
 
   def gathering_place?(place)

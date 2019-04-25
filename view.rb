@@ -133,12 +133,17 @@ class View
   end
 
   def draw_go_out
-    PLACES.each_with_index do |p,i|
-      Window.draw(10+165*i,30,@placeback)
-      Window.draw_font(15+165*i,36,p[0],Font20)
-      p.each_with_index do |t,j|
-        next if j == 0
-        Window.draw_font(20+165*i, 60+j*25, t[0], Font20, mouseover_color(@controller.pos_go_out == [i,j]))
+    Window.draw(10,30,@placeback)
+    Window.draw(170,30,@placeback)
+    Window.draw_font(15,36,"城下町(2時間)",Font20)
+    Window.draw_font(180,36,"素材集め",Font20)
+      
+    PLACES.each_with_index do |(k,v),i|
+      next if k == :home
+      if i < 5 #城下町
+        Window.draw_font(20, 60+i*25, v[0], Font20, mouseover_color(@controller.pos_go_out == i))
+      else #素材集め
+        Window.draw_font(180, 60+(i-5)*25, v[0], Font20, mouseover_color(@controller.pos_go_out == i))
       end
     end
   end
@@ -180,9 +185,8 @@ class View
   end
 
   def draw_places_menu
-    places = @game.places_for_menu
-    places.each_with_index do |place,i|
-      Window.draw_font(640 - MAIN_MENU_WIDTH + 30, MENU_EACH_HEIGHT*i+5, place[0], Font20, mouseover_color(@controller.pos_main_menu == i))
+    @game.places_for_menu.each_with_index do |e,i|
+      Window.draw_font(640 - MAIN_MENU_WIDTH + 30, MENU_EACH_HEIGHT*i+5, e[1], Font20, mouseover_color(@controller.pos_main_menu == i))
     end
   end
 
