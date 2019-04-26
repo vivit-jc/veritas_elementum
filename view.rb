@@ -141,9 +141,9 @@ class View
     PLACES.each_with_index do |(k,v),i|
       next if k == :home
       if i < 5 #城下町
-        Window.draw_font(20, 60+i*25, v[0], Font20, mouseover_color(@controller.pos_go_out == i))
+        Window.draw_font(20, 65+i*25, v[0], Font20, mouseover_color(@controller.pos_go_out == i))
       else #素材集め
-        Window.draw_font(180, 60+(i-5)*25, v[0], Font20, mouseover_color(@controller.pos_go_out == i))
+        Window.draw_font(180, 65+(i-5)*25, v[0], Font20, mouseover_color(@controller.pos_go_out == i))
       end
     end
   end
@@ -192,8 +192,12 @@ class View
 
   def draw_schedule
     s = @game.schedule
-    Window.draw_font(480, 220, "#{s.season} #{s.day+1}日(#{s.weekday}) #{s.hour}時", Font20, {color: WHITE})
-    Window.draw(640-MAIN_MENU_WIDTH, 480-SCHEDULE_HEIGHT, @clock)
+    Window.draw_font(480, SCHEDULE_HEIGHT+10, "#{s.season} #{s.day+1}日(#{s.weekday}) #{s.hour}時", Font20, {color: WHITE})
+    Window.draw(640-MAIN_MENU_WIDTH, SCHEDULE_HEIGHT, @clock)
+  end
+
+  def draw_health
+    Window.draw_font(480, 220, "体力: "+@game.health+" / 30", Font20)
   end
 
   def draw_message(str_array)

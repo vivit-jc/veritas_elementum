@@ -145,9 +145,9 @@ class Controller
     PLACES.each_with_index do |(k,v),i|
       next if k == :home
       if i < 5 #城下町
-        return i if mcheck(10,60+i*25,170,80+i*25)
+        return i if mcheck(10,65+i*25,170,85+i*25)
       else #素材集め
-        return i if mcheck(170,60+(i-5)*25,320,80+(i-5)*25)
+        return i if mcheck(170,65+(i-5)*25,320,85+(i-5)*25)
       end
     end
     return -1

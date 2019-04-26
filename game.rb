@@ -6,7 +6,7 @@ require_remote './material.rb'
 
 attr_accessor :status, :page
 attr_reader :game_status, :game_status_memo, :material, :message, :mainview_status,
-  :experiment, :schedule, :place_now, :places_for_menu
+  :experiment, :schedule, :place_now, :places_for_menu, :health
 
   def initialize
     @status = :title
@@ -15,6 +15,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     @mainview_status = nil
     @menu_status = nil
     @message = ["", "", ""]
+    @health = 30
     
     @material = Material.new
     @experiment = Experiment.new
@@ -120,6 +121,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     end
 
     @schedule.gain_time(time)
+    @health -= time
     @place_now = place
     make_places_menu(@place_now)
 
@@ -143,7 +145,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     places.delete_if do |k,v|
       k == except || (@place_now != :home && gathering_place?(k))
     end
-    p @places_for_menu = places.map{|k,v|[k,v].flatten}
+    @places_for_menu = places.map{|k,v|[k,v].flatten}
   end
 
   def gathering_place?(place)
