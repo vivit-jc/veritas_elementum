@@ -62,6 +62,9 @@ class Controller
       when :go_out
         pos = pos_go_out
         @game.go_out(PLACES.to_a[pos][0]) if pos != -1
+      when :rest
+        pos = pos_rest
+        @game.rest(pos) if pos != -1
       end
     end
   end
@@ -149,6 +152,13 @@ class Controller
       else #素材集め
         return i if mcheck(170,65+(i-5)*25,320,85+(i-5)*25)
       end
+    end
+    return -1
+  end
+
+  def pos_rest
+    2.times do |i|
+      return i if mcheck(30, 30+40*i, 30+get_width("4時間寝る"), 50+40*i)
     end
     return -1
   end

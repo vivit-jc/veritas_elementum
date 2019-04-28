@@ -57,6 +57,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     when 4 #素材
       @game_status = :material
     when 5 #休む
+      @mainview_status = :rest
       @game_status = :rest
     when 6 #ヘルプ
       @game_status = :help
@@ -124,7 +125,14 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     @health -= time
     @place_now = place
     make_places_menu(@place_now)
+  end
 
+  def rest(time)
+    time = (time+1)*4
+    @message[0] = time.to_s + "時間寝た"
+    @health += time*2
+    @health = 30 if @health > 30
+    @schedule.gain_time(time)
   end
 
   def go_title

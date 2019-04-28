@@ -42,6 +42,7 @@ class View
   def draw_game
     draw_main_menu if @game.place_now == :home
     draw_schedule
+    draw_health
     draw_message(@game.message)
     case @game.game_status
     when :experiment
@@ -55,6 +56,8 @@ class View
         draw_places_menu
         draw_place
       end
+    when :rest
+      draw_rest
     end
 
   end
@@ -190,6 +193,12 @@ class View
     end
   end
 
+  def draw_rest
+    2.times do |i|
+      Window.draw_font(30, 30+40*i, ((i+1)*4).to_s+"時間寝る", Font20, mouseover_color(@controller.pos_rest == i))
+    end
+  end
+
   def draw_schedule
     s = @game.schedule
     Window.draw_font(480, SCHEDULE_HEIGHT+10, "#{s.season} #{s.day+1}日(#{s.weekday}) #{s.hour}時", Font20, {color: WHITE})
@@ -197,7 +206,7 @@ class View
   end
 
   def draw_health
-    Window.draw_font(480, 220, "体力: "+@game.health+" / 30", Font20)
+    Window.draw_font(475, 215, "体力: "+@game.health.to_s+" / 30", Font20)
   end
 
   def draw_message(str_array)
