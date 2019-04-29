@@ -56,6 +56,8 @@ class View
         draw_places_menu
         draw_place
       end
+    when :material
+      draw_materials_view
     when :rest
       draw_rest
     end
@@ -79,21 +81,27 @@ class View
   def draw_materials_view
     page = @game.page
     if @game.game_status == :experiment
-      materials = @material.have_materials
+      @material.have_materials.select{|k,v|v>0}.each_with_index do |(k,v),i|
+        next if v == 0
+        draw_materials_view_core(k,i)
+      end
     elsif @game.game_status == :material
-      materials = @material.know_materials
-    end
-
-    materials.select{|k,v|v>0}.each_with_index do |(k,v),i|
-      next if (page+1)*16 <= i || page*16 > i
-      next if v == 0
-      Window.draw(10+200*(((i%16)/8).floor), 20+40*(i%8), @iconback_s)
-      Window.draw_scale(-6+200*(((i%16)/8).floor), 4+40*(i%8), Image[k], 0.5, 0.5)
-      Window.draw_font(45+200*(((i%16)/8).floor), 28+40*(i%8), "x "+v.to_s, Font20)
+      MATERIALS.each_with_index do |(k,v),i|
+        draw_materials_view_core(k,i)
+      end
     end
 
     Window.draw(420,140,Image[:right]) if page == 0
     Window.draw(420,140,Image[:left]) if page == 1
+  end
+
+  def draw_materials_view_core(k,i)
+    page = @game.page
+    return if (page+1)*16 <= i || page*16 > i
+    Window.draw(10+200*(((i%16)/8).floor), 20+40*(i%8), @iconback_s)
+    Window.draw_scale(-6+200*(((i%16)/8).floor), 4+40*(i%8), Image[k], 0.5, 0.5)
+    Window.draw_font(45+200*(((i%16)/8).floor), 28+40*(i%8), "x "+@material.have_materials[k].to_s, Font20)
+    Window.draw_font(90+200*(((i%16)/8).floor), 28+40*(i%8), atom_j(@material.know_materials[k]), Font20)
   end
 
   def draw_reagents_view
@@ -229,6 +237,7 @@ class View
   end
 
   def atom_j(atoms)
+    return "???" unless atoms
     atom = atoms.to_s.split("")
     str = []
     atom.each do |a|

@@ -56,6 +56,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
       @game_status = :paper
     when 4 #素材
       @game_status = :material
+      @mainview_status = :materials_view
     when 5 #休む
       @mainview_status = :rest
       @game_status = :rest
@@ -119,12 +120,16 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
       time = PLACES[@place_now][1]
     elsif @place_now == :home
       time = PLACES[place][1]
+    elsif place == @place_now
+      @message[1] = "既にそこにいる"
+      return
     end
 
     @schedule.gain_time(time)
     @health -= time
     @place_now = place
     make_places_menu(@place_now)
+
   end
 
   def rest(time)
@@ -151,7 +156,7 @@ attr_reader :game_status, :game_status_memo, :material, :message, :mainview_stat
     end
     places = PLACES.clone
     places.delete_if do |k,v|
-      k == except || (@place_now != :home && gathering_place?(k))
+      @place_now != :home && gathering_place?(k)
     end
     @places_for_menu = places.map{|k,v|[k,v].flatten}
   end

@@ -34,7 +34,6 @@ MAIN_MENU_TEXT = ["実験","外出","ノート","論文","素材","休む","ヘ�
 
 EXPERIMENT = [[100,80],[250,80]]
 
-
 Font12 = Font.new(12)
 Font16 = Font.new(16)
 Font20 = Font.new(20)
@@ -61,7 +60,6 @@ PLACES = {
     home: ["家に帰る",0,false]
   }
 
-
 Window.height = 480
 Window.width = 640
 
@@ -75,6 +73,15 @@ MATERIALS.each_with_index do |m,i|
 end
 
 Window.load_resources do
+
+  url = 'textdata.json'
+  req = Native(`new XMLHttpRequest()`)
+  req.overrideMimeType("text/plain")
+  req.open("GET", url, false)
+  req.send
+  text_data = req.responseText
+  TEXT = Native(`JSON.parse(text_data)`)
+
   game = Game.new
   controller = Controller.new(game)
   view = View.new(game,controller)
